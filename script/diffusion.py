@@ -28,3 +28,77 @@ class TimeEmbedding(nn.Module):
           x = self.linear2(x)
 
           return x
+
+class SwitchSequential(nn.Sequential):
+     def forward(self, x:torch.Tensor, context: torch.Tensor, time:torch.Tensor) -> torch.Tensor:
+          for layer in self:
+               if isinstance(layer, UNET_AttentionBlock):
+                    x = layer(x, context)
+               elif isinstance(layer, UNET_ResidualBlock):
+                    x = layer(x, time)
+               else:
+                    x = layer(x)
+
+          return x
+     
+class UNET(nn.Module):
+     def __init__(self):
+          super().__init__()
+
+          self.encoders = nn.Module([
+               SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
+
+               SwitchSequential(UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)),
+
+               SwitchSequential(nn.Conv2d(320, 320, kernel_size=3, stride=2, padding=1)),
+
+               SwitchSequential(UNET_ResidualBlock(320, 640), UNET_AttentionBlock(8, 80)),
+
+               SwitchSequential(UNET_ResidualBlock(640, 640), UNET_AttentionBlock(8, 80)),
+
+               SwitchSequential(nn.Conv2d(640, 640, kernel_size=3, stride=2, padding=1)),
+
+               SwitchSequential(UNET_ResidualBlock(640, 1280), UNET_AttentionBlock(8, 160)),
+
+               SwitchSequential(UNET_ResidualBlock(1280, 1280), UNET_AttentionBlock(8, 160)),
+
+               SwitchSequential(nn.Conv2d(1280, 1280, kernel_size=3, stride=2, padding=1)),
+
+               SwitchSequential(UNET_ResidualBlock(1280, 1280)),
+
+               SwitchSequential(UNET_ResidualBlock(1280, 1280)),
+          ])
+
+          self.bottleneck = SwitchSequential(
+               UNET_ResidualBlock(1280, 1280),
+
+               UNET_AttentionBlock(8, 160),
+
+               UNET_ResidualBlock(1280, 1280)
+          )
+
+          self.decoders = nn.ModuleList([
+               SwitchSequential(UNET_ResidualBlock(2560, 1280)),
+
+               SwitchSequential(UNET_ResidualBlock(2560, 1280)),
+
+               SwitchSequential(UNET_ResidualBlock(2560, 1280), UpSample(1280)),
+
+               SwitchSequential(UNET_ResidualBlock(2560, 1280), UNET_Attention(8, 160)),
+
+               SwitchSequential(UNET_ResidualBlock(2560, 1280), UNET_Attention(8, 160)),
+
+               SwitchSequential(UNET_ResidualBlock(1920, 1280), UNET_Attention(8, 160), UpSample(1280)),
+
+               SwitchSequential(UNET_ResidualBlock(1920, 640), UNET_Attention(8, 80)),
+
+               SwitchSequential(UNET_ResidualBlock(1280, 640), UNET_Attention(8,80)),
+
+               SwitchSequential(UNET_ResidualBlock(960, 640), UNET_Attention(8, 80), UpSample(640)),
+
+               SwitchSequential(UNET_ResidualBlock(960, 320), UNET_Attention(8, 40)),
+
+               SwitchSequential(UNET_ResidualBlock(640, 320), UNET_Attention(8, 80)),
+
+               SwitchSequential(UNET_ResidualBlock(640, 320), UNET_Attention(8, 40)),
+          ])
