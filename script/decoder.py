@@ -9,13 +9,13 @@ class VAE_ResidualBlock(nn.Module):
         self.groupnorm_1 = nn.GroupNorm(32, in_channels)
         self.conv_1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
 
-        self.groupnorm_2 = nn.GroupNorm(32, in_channels)
+        self.groupnorm_2 = nn.GroupNorm(32, out_channels)
         self.conv_2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
 
         if in_channels == out_channels:
-            self.residual = nn.Identity()
+            self.residual_layer = nn.Identity()
         else:
-            self.residual = nn.Conv2d(in_channels, out_channels, kernel_size=1, padding=0)
+            self.residual_layer = nn.Conv2d(in_channels, out_channels, kernel_size=1, padding=0)
 
     def forward(self, x:torch.Tensor) -> torch.Tensor:
         residue = x
@@ -32,7 +32,7 @@ class VAE_ResidualBlock(nn.Module):
 
         x = self.conv_2(x)
 
-        return x + self.residual(residue)
+        return x + self.residual_layer(residue)
     
 class VAE_AttentionBlock(nn.Module):
     def __init__(self, channels):
@@ -81,11 +81,7 @@ class VAE_Decoder(nn.Sequential):
 
             nn.Upsample(scale_factor=2),
 
-            nn.Conv2d(512, 512),
-
-            nn.Conv2d(512, 512),
-
-            nn.Conv2d(512, 512),
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
 
             nn.Upsample(scale_factor=2),
 
@@ -111,7 +107,7 @@ class VAE_Decoder(nn.Sequential):
 
             nn.SiLU(),
 
-            nn.Conv2d(128, 3, kernel_size=3, padding=128)
+            nn.Conv2d(128, 3, kernel_size=3, padding=1)
         )
     
     def forward(self, x:torch.Tensor) -> torch.Tensor:
