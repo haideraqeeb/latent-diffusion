@@ -11,7 +11,7 @@ def preload_models_from_standard_weights(ckpt_path, device):
      encoder.load_state_dict(state_dict["encoder"], strict=True)
 
      decoder = VAE_Decoder().to(device)
-     decoder.load_state_dict(state_dict["decoder"], strict=False)
+     decoder.load_state_dict(state_dict["decoder"], strict=True)
 
      diffusion = Diffusion().to(device)
      diffusion.load_state_dict(state_dict["diffusion"], strict=True)
