@@ -39,6 +39,10 @@ class VAE_Encoder(nn.Sequential):
             nn.GroupNorm(32, 512),
 
             nn.SiLU(),
+
+            nn.Conv2d(512, 8, kernel_size=3, padding=1),
+
+            nn.Conv2d(8, 8, kernel_size=1, padding=0)
         )
     
     def forward(self, x, noise):
@@ -51,7 +55,7 @@ class VAE_Encoder(nn.Sequential):
 
         mean, log_variance = torch.chunk(x, 2, dim=1)
 
-        log_variance = torch.clamp(x, -30, 20)
+        log_variance = torch.clamp(log_variance, -30, 20)
 
         variance = log_variance.exp()
 
