@@ -38,6 +38,8 @@ class UNET(nn.Module):
 
                SwitchSequential(UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)),
 
+               SwitchSequential(UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)),
+
                SwitchSequential(nn.Conv2d(320, 320, kernel_size=3, stride=2, padding=1)),
 
                SwitchSequential(UNET_ResidualBlock(320, 640), UNET_AttentionBlock(8, 80)),
