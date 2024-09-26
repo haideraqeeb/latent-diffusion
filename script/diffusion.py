@@ -5,6 +5,7 @@ from attention import SelfAttention, CrossAttention
 
 class Diffusion(nn.Module):
      def __init__(self):
+          super().__init__()
           self.time_embedding = TimeEmbedding(320)
           self.unet = UNET()
           self.final = UNET_OutputLayer(320, 4)
@@ -33,7 +34,7 @@ class UNET(nn.Module):
      def __init__(self):
           super().__init__()
 
-          self.encoders = nn.Module([
+          self.encoders = nn.ModuleList([
                SwitchSequential(nn.Conv2d(4, 320, kernel_size=3, padding=1)),
 
                SwitchSequential(UNET_ResidualBlock(320, 320), UNET_AttentionBlock(8, 40)),
@@ -88,10 +89,24 @@ class UNET(nn.Module):
 
                SwitchSequential(UNET_ResidualBlock(960, 320), UNET_AttentionBlock(8, 40)),
 
-               SwitchSequential(UNET_ResidualBlock(640, 320), UNET_AttentionBlock(8, 80)),
+               SwitchSequential(UNET_ResidualBlock(640, 320), UNET_AttentionBlock(8, 40)),
 
                SwitchSequential(UNET_ResidualBlock(640, 320), UNET_AttentionBlock(8, 40)),
           ])
+
+     def forward(self, x, context, time):
+          skip_connections = []
+          for layer in self.encoders:
+               x = layer(x, context, time)
+               skip_connections.append(x)
+
+          x = self.bottleneck(x, context, time)
+
+          for layer in self.decoders:
+               x = torch.cat((x, skip_connections.pop()), dim=1)
+               x = layer(x, context, time)
+          
+          return x
 
 class UNET_OutputLayer(nn.Module):
      def __init__(self, in_channels: int, out_channels: int):
