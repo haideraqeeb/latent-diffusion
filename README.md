@@ -9,7 +9,7 @@ pip install -r requirements.txt
 2. Download the ```v1-5-pruned-emaonly.ckpt``` and save it in the data folder from the same link.
 
 ## To use the model:
-1. Go to the ```script``` folder.
+1. Go to the ```script``` folder. Then open the ```demo.ipynb``` notebook.
 2. Change the ```prompt``` to the image you want to generate(you can also add ```uncond_prompt``` for the unconditional prompt if you want to exclude something).
 3. If you have CUDA support or MPS support then change the ```ALLOW_CUDA``` or ```ALLOW_MPS``` constant to ```True``` for faster processing.
 
