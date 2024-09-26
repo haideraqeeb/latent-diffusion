@@ -31,18 +31,18 @@ def generate(prompt: str, uncond_prompt: str, input_image=None, strength=0.8, do
                raise ValueError("Strength must be between 0 and 1")
           
           if idle_device:
-               to_idle: lambda x: x.to(idle_device)
+               to_idle = lambda x: x.to(idle_device)
           else:
-               to_idle: lambda x: x
+               to_idle = lambda x: x
 
           generator = torch.Generator(device=device)
           if seed is None:
-               generate.seed()
+               generator.seed()
           else:
                generator.manual_seed(seed)
 
           clip = models["clip"]
-          clip = clip.to(device)
+          clip.to(device)
 
           if do_cfg:
                cond_tokens = tokenizer.batch_encode_plus([prompt], padding="max_length", max_length=77).input_ids
@@ -64,7 +64,7 @@ def generate(prompt: str, uncond_prompt: str, input_image=None, strength=0.8, do
 
           if sampler_name == "ddpm":
                sampler = DDPMSampler(generator)
-               sampler.set_inference_steps(n_inference_steps)
+               sampler.set_inference_timesteps(n_inference_steps)
           else:
                raise ValueError(f"Unknown sampler {sampler_name}")
           
@@ -122,7 +122,7 @@ def generate(prompt: str, uncond_prompt: str, input_image=None, strength=0.8, do
 
           images = rescale(images, (-1, 1), (0, 255), clamp=True)
 
-          images = images.premute(0, 2, 3, 1)
+          images = images.permute(0, 2, 3, 1)
           images = images.to("cpu", torch.uint8).numpy()
           return images[0]
      
@@ -139,7 +139,7 @@ def rescale(x, old_range, new_range, clamp=False):
      return x
 
 def get_time_embedding(timestep):
-     freqs = torch.pow(10000, -torch.range(start=0, end=160, dtype=torch.float32) / 160)
+     freqs = torch.pow(10000, -torch.arange(start=0, end=160, dtype=torch.float32) / 160)
 
      x = torch.tensor([timestep], dtype=torch.float32)[:, None] * freqs[None]
 
