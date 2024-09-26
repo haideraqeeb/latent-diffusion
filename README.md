@@ -16,13 +16,13 @@ pip install -r requirements.txt
 ## Sample Generated Images
 ##### Prompt: A football stadium, highly detailed, ultra sharp, cinematic, 8k resolution.
 ##### Output:
-![stadium](assets\stadium.jpg)
+![stadium](assets/stadium.jpg)
 
 </br>
 
 ##### Prompt: Mosaic art of Taj Mahal using cyberpunk themed art style, 8k resolution.
 ##### Output:
-![taj_mahal](assets\taj_mahal.jpg)
+![taj_mahal](assets/taj_mahal.jpg)
 
 
 
