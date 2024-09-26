@@ -13,6 +13,19 @@ pip install -r requirements.txt
 2. Change the ```prompt``` to the image you want to generate(you can also add ```uncond_prompt``` for the unconditional prompt if you want to exclude something).
 3. If you have CUDA support or MPS support then change the ```ALLOW_CUDA``` or ```ALLOW_MPS``` constant to ```True``` for faster processing.
 
+## Sample Generated Images
+##### Prompt: A football stadium, highly detailed, ultra sharp, cinematic, 8k resolution.
+##### Output:
+![stadium](assets\stadium.jpg)
+
+</br>
+
+##### Prompt: Mosaic art of Taj Mahal using cyberpunk themed art style, 8k resolution.
+##### Output:
+![taj_mahal](assets\taj_mahal.jpg)
+
+
+
 ## Special Thanks
 Special thanks to the following repositories:
 
