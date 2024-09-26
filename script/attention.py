@@ -62,12 +62,12 @@ class CrossAttention(nn.Module):
         interim_shape = (batch_size, -1, self.n_heads, self.d_head)
 
         q = self.q_proj(x)
-        k = self.k_proj(x)
-        v = self.v_proj(x)
+        k = self.k_proj(y)
+        v = self.v_proj(y)
 
         q = q.view(interim_shape).transpose(1, 2)
-        k = k.veiw(interim_shape).transpose(1, 2)
-        v = v.view(interim_shape).tranpose(1, 2)
+        k = k.view(interim_shape).transpose(1, 2)
+        v = v.view(interim_shape).transpose(1, 2)
 
         weight = q @ k.transpose(-1, -2)
 
@@ -77,7 +77,7 @@ class CrossAttention(nn.Module):
 
         output = weight @ v
 
-        output = output.transpose(1, 2).continous()
+        output = output.transpose(1, 2).contiguous()
 
         output = output.view(input_shape)
 
