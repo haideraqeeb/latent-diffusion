@@ -20,13 +20,13 @@ class Diffusion(nn.Module):
 class TimeEmbedding(nn.Module):
      def __init__(self, n_embd: int):
           super().__init__()
-          self.linear1 = nn.Linear(n_embd, 4*n_embd)
-          self.linear2 = nn.Linear(4*n_embd, 4*n_embd)
+          self.linear_1 = nn.Linear(n_embd, 4*n_embd)
+          self.linear_2 = nn.Linear(4*n_embd, 4*n_embd)
 
      def forward(self, x: torch.Tensor) -> torch.Tensor:
-          x = self.linear1(x)
+          x = self.linear_1(x)
           x = F.silu(x)
-          x = self.linear2(x)
+          x = self.linear_2(x)
 
           return x
      
@@ -233,7 +233,7 @@ class UNET_AttentionBlock(nn.Module):
 
           x = self.layernorm_2(x)
 
-          x = self.attention_2(x)
+          x = self.attention_2(x, context)
 
           x += residue_short
 
