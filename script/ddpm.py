@@ -10,12 +10,12 @@ class DDPMSampler:
 
           self.generator = generator
           self.num_training_steps = num_training_steps
-          self.timesteps = torch.from_numpy(np.arrange(0, num_training_steps)[::-1].copy())
+          self.timesteps = torch.from_numpy(np.arange(0, num_training_steps)[::-1].copy())
 
      def set_inference_timesteps(self, num_inference_steps=50):
           self.num_inference_steps = num_inference_steps
           step_ratio = self.num_training_steps // self.num_inference_steps
-          timesteps = (np.arrange(0, num_inference_steps) * step_ratio).round()[::-1].copy().astype(np.int64)
+          timesteps = (np.arange(0, num_inference_steps) * step_ratio).round()[::-1].copy().astype(np.int64)
           self.timesteps = torch.from_numpy(timesteps)
 
      def add_noise(self, original_samples: torch.FloatTensor, timesteps: torch.IntTensor) -> torch.FloatTensor:
@@ -76,7 +76,7 @@ class DDPMSampler:
           alpha_prod_t_prev = self.alpha_cumprod[prev_t] if prev_t >= 0 else self.one
 
           current_beta_t = 1 - alpha_prod_t / alpha_prod_t_prev
-
+          variance = (1 - alpha_prod_t_prev) / (1 - alpha_prod_t) * current_beta_t
           variance = torch.clamp(variance, min=1e-20)
 
           return variance
