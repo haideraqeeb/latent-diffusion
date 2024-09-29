@@ -10,8 +10,9 @@ pip install -r requirements.txt
 
 ## To use the model:
 1. Go to the ```script``` folder. Then open the ```demo.ipynb``` notebook.
-2. Change the ```prompt``` to the image you want to generate(you can also add ```uncond_prompt``` for the unconditional prompt if you want to exclude something).
-3. If you have CUDA support or MPS support then change the ```ALLOW_CUDA``` or ```ALLOW_MPS``` constant to ```True``` for faster processing.
+2. For text2image task, change the ```prompt``` to the image you want to generate(you can also add ```uncond_prompt``` for the unconditional prompt if you want to exclude something).
+3. For image2image task, first create an ```images``` folder in the root directory, add an image to it, then add the relative path of the image in ```image_path``` variable and finally uncomment the line ```input_image = Image.open(image_path)```.
+4. If you have CUDA support or MPS support then change the ```ALLOW_CUDA``` or ```ALLOW_MPS``` constant to ```True``` for faster processing.
 
 ## Sample Generated Images
 ##### Prompt: A football stadium, highly detailed, ultra sharp, cinematic, 8k resolution.
